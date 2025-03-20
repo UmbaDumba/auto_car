@@ -9,13 +9,18 @@
 
 #include "def.h"
 #include "pwm.h"
+#include "uart0.h"
 #include "uart1.h"
+#include "ultrasonic.h"
+
+FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
 
 volatile int msec_count = 0;
 
 
 void init_timer0(void);
 void moving_manual_mode(t_car_info *my_car);
+void moving_auto_mode(t_car_info *my_car);
 
 void (*car_move_func[])(int) = 
 {
@@ -28,7 +33,8 @@ void (*car_move_func[])(int) =
 
 void (*car_program_modes[])(t_car_info *) =
 {
-	moving_manual_mode
+	moving_manual_mode,
+	moving_auto_mode
 };
 
 int speed_boundarys[] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
@@ -47,7 +53,10 @@ int main(void)
 	init_timer1();
 	init_L298N();
 	init_uart1();
+	init_uart0();
+	init_ultrasonic();
 	sei();
+	stdout = &OUTPUT;
 	
 	t_car_info my_car;
 	my_car.mode = MANUAL_MODE;
@@ -59,15 +68,18 @@ int main(void)
     while (1) 
     {
 		// TODO
-		// 바퀴 굴리기
 		// LED 제어하기
-		// 초음파센서로 앞 물체 파악하기
 		// LCD 제어하기
 		// FND 제어하기
 		// 부저 제어하기
-		// 블루투스 커멘드 처리
 		
 		car_program_modes[my_car.mode](&my_car);
+		
+		if(msec_count > 1000)
+		{
+			msec_count = 0;
+		}
+		
 		
     }
 }
@@ -86,6 +98,7 @@ void moving_manual_mode(t_car_info *my_car)
 			case 'F':
 			case 'f':
 				my_car->state = FORWARD;
+				(*my_car).state = FORWARD;
 				break;
 			case 'B':
 			case 'b':
@@ -116,4 +129,27 @@ void moving_manual_mode(t_car_info *my_car)
 		}
 		
 		car_move_func[my_car->state](speed_boundarys[my_car->speed]);
+}
+
+void moving_auto_mode(t_car_info *my_car)
+{
+	check_obstacle();
+	
+	if((obstacle_info[0] && obstacle_info[1] && obstacle_info[2]) || (!obstacle_info[0] && obstacle_info[1] && !obstacle_info[2]))
+	{
+		my_car->state = STOP;
+	}else if((obstacle_info[0] && obstacle_info[1]) || obstacle_info[0])
+	{
+		my_car->speed = 9;
+		my_car->state = TURN_RIGHT;
+	}else if((obstacle_info[1] && obstacle_info[2]) || obstacle_info[2])
+	{
+		my_car->speed = 9;
+		my_car->state = TURN_LEFT;
+	}else{
+		my_car->speed = 2;
+		my_car->state = FORWARD;
+	}
+	
+	car_move_func[my_car->state](speed_boundarys[my_car->speed]);
 }

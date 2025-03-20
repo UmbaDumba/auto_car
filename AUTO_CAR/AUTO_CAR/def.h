@@ -9,6 +9,9 @@
 #ifndef DEF_H_
 #define DEF_H_
 
+#define COMMAND_NUMBER 10 // command 개수
+#define COMMAND_LENGTH 40 // command 길이
+
 
 #define MANUAL_MODE	0	// 수동모드
 #define AUTO_MODE	1	// 자동모드
