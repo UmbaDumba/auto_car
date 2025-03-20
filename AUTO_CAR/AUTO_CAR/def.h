@@ -30,8 +30,9 @@ typedef struct car_info{
 					// 직진, 후진, 좌회전, 우회전, 멈춤
 	int speed; // 자동차 속도
 	// todo		// 틀어 줄 노래 (부저 출력노래 결정)
-	// todo		// LCD 문구 (출력할것)
-	// todo		// FND 문구 (출력할것)
+	char *lcd_text_up;		// LCD 문구 (출력할것) -> 문자열
+	char *lcd_text_down;
+	// todo		// FND 문구 (출력할것) -> font 배열 포인터??
 	
 }t_car_info;
 
