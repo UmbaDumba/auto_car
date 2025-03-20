@@ -13,7 +13,6 @@
 #include <avr/io.h>
 #include <util/delay.h>  // _delay_ms _delay_us
 #include <avr/interrupt.h>
-#include "uart0.h"
 
 extern volatile uint8_t bt_data;
 

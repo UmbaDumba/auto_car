@@ -6,3 +6,5 @@ main.c
 
 pwm.c
 
+uart1.c
+

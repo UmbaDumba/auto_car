@@ -5,12 +5,10 @@
 #include "uart1.h"
 
 
-volatile uint8_t bt_data = 0; // 명령어
+volatile uint8_t bt_data = 'f'; // 명령어
 ISR(USART1_RX_vect)
 {
 	bt_data = UDR1;
-	
-	UART0_transmit(bt_data); // bt_data 출력
 }
 
 void init_uart1(void)

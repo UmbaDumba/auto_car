@@ -8,6 +8,7 @@
 #include <stdio.h>		// printf
 
 #include "pwm.h"
+#include "uart1.h"
 
 volatile int msec_count = 0;
 
@@ -37,6 +38,7 @@ int main(void)
 	init_timer0();
 	init_timer1();
 	init_L298N();
+	init_uart1();
 	sei();
 	
     while (1) 
@@ -50,21 +52,21 @@ int main(void)
 		// 부저 제어하기
 		// 블루투스 커멘드 처리
 		
-		if(msec_count > 4000)
-		{
-			msec_count = 0;
-		}else if(msec_count > 3000)
-		{
-			motor_turn_left(500);
-		}else if(msec_count > 2000)
-		{
-			motor_turn_right(500);
-		}else if(msec_count > 1000)
-		{
-			motor_direction_backward(500);
-		}else
+		if(bt_data == 'f')
 		{
 			motor_direction_forward(500);
+		}else if(bt_data == 'b')
+		{
+			motor_direction_backward(500);
+		}else if(bt_data == 'l')
+		{
+			motor_turn_left(500);
+		}else if(bt_data == 'r')
+		{
+			motor_turn_right(500);
+		}else
+		{
+			motor_stop();
 		}
 		
     }
