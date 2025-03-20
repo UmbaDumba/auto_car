@@ -14,6 +14,7 @@
 #include <util/delay.h>  // _delay_ms _delay_us
 #include <avr/interrupt.h>
 
+extern volatile uint8_t pre_bt_data;
 extern volatile uint8_t bt_data;
 
 void init_uart1(void);

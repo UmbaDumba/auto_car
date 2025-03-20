@@ -4,10 +4,11 @@
 
 #include "uart1.h"
 
-
-volatile uint8_t bt_data = 'f'; // 명령어
+volatile uint8_t pre_bt_data = 0;
+volatile uint8_t bt_data = 0; // 명령어
 ISR(USART1_RX_vect)
 {
+	pre_bt_data = bt_data;
 	bt_data = UDR1;
 }
 

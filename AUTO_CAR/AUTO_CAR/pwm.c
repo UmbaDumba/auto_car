@@ -41,7 +41,7 @@ void init_L298N(void)
 }
 
 // motor driver IN값을 전부 1로 set한다
-void motor_stop(void)
+void motor_stop(int speed)
 {
 	// direction port reset
 	MOTOR_DRIVER_DIRECTION_PORT &= ~(1 << MOTOR_DRIVER_IN1_NUM | 1 << MOTOR_DRIVER_IN2_NUM |

@@ -51,7 +51,7 @@
 
 void init_timer1(void);
 void init_L298N(void);
-void motor_stop(void);
+void motor_stop(int speed);
 void motor_direction_forward(int speed);
 void motor_direction_backward(int speed);
 void motor_turn_left(int speed);
