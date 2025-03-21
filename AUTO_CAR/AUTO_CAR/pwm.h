@@ -58,6 +58,8 @@ void motor_turn_left(int speed);
 void motor_turn_right(int speed);
 void motor_backward_left(int speed);
 void motor_backward_right(int speed);
+void motor_turn_left_bi(int speed);
+void motor_turn_right_bi(int speed);
 
 
 #endif /* PWM_H_ */

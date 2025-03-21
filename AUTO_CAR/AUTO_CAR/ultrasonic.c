@@ -50,18 +50,11 @@ ISR(INT4_vect)
 		if(overflows_value > 0)
 		{
 			// 약 2ms -> 35센치 이상 넘어감
-			ultrasonic_dis = 100;
+			obstacle_info[0] = 300;
 		}else{
-			ultrasonic_dis = tcnt_value * 128.0 / 16;
-			ultrasonic_dis /= 58;
-
+			obstacle_info[0] = tcnt_value;
 		}
 		
-		if(ultrasonic_dis <= MAX_LENGHT){
-			obstacle_info[0] = 1;
-			}else{
-			obstacle_info[0] = 0;
-		}
 		check_distance_index = 1;
 		distance_checking = 0;
 	}
@@ -84,18 +77,12 @@ ISR(INT5_vect)
 		if(overflows_value > 0)
 		{
 			// 약 2ms -> 35센치 이상 넘어감
-			ultrasonic_dis = 100;
-			}else{
-			ultrasonic_dis = tcnt_value * 128.0 / 16;
-			ultrasonic_dis /= 58;
+			obstacle_info[1] = 300;
+		}else{
+			obstacle_info[1] = tcnt_value;
 
 		}
 		
-		if(ultrasonic_dis <= MAX_LENGHT){
-			obstacle_info[1] = 1;
-			}else{
-			obstacle_info[1] = 0;
-		}
 		check_distance_index = 2;
 		distance_checking = 0;
 	}
@@ -118,18 +105,12 @@ ISR(INT6_vect)
 		if(overflows_value > 0)
 		{
 			// 약 2ms -> 35센치 이상 넘어감
-			ultrasonic_dis = 100;
-			}else{
-			ultrasonic_dis = tcnt_value * 128.0 / 16;
-			ultrasonic_dis /= 58;
+			obstacle_info[2] = 300;
+		}else{
+			obstacle_info[2] = tcnt_value;
 
 		}
 		
-		if(ultrasonic_dis <= MAX_LENGHT){
-			obstacle_info[2] = 1;
-		}else{
-			obstacle_info[2] = 0;
-		}
 		check_distance_index = 0;
 		distance_checking = 0;
 	}
@@ -205,8 +186,8 @@ void check_obstacle(void)
 	if(!distance_checking)
 	{
 		//_delay_ms(1000);
-		printf("%d,%d,%d\n", ultrasonic_dis,overflows_value,tcnt_value);
-		printf("\ntrigger\n");
+		//printf("%d,%d,%d\n",obstacle_info[0], obstacle_info[1], obstacle_info[2]);
+		//printf("\ntrigger\n");
 		sec_count = 0;
 		triger_funcs[check_distance_index]();
 	}else{

@@ -25,7 +25,7 @@
 
 
 void init_fnd(void);
-
+void fnd_clear_digit(void);
 void fnd_display_0(int c);
 
 #endif /* FND_H_ */

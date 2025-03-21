@@ -96,7 +96,7 @@ void motor_turn_right(int speed)
 void motor_backward_left(int speed)
 {
 	motor_direction_backward(0); // 후진모드
-	MOTOR_LEFT_PWM = 0;
+	MOTOR_LEFT_PWM = 300;
 	MOTOR_RIGHT_PWM = speed;
 }
 
@@ -104,5 +104,29 @@ void motor_backward_right(int speed)
 {
 	motor_direction_backward(0);
 	MOTOR_LEFT_PWM = speed;
-	MOTOR_RIGHT_PWM = 0;
+	MOTOR_RIGHT_PWM = 300;
+}
+
+void motor_turn_left_bi(int speed)
+{
+	// direction port reset
+	MOTOR_DRIVER_DIRECTION_PORT &= ~(1 << MOTOR_DRIVER_IN1_NUM | 1 << MOTOR_DRIVER_IN2_NUM |
+	1 << MOTOR_DRIVER_IN3_NUM | 1 << MOTOR_DRIVER_IN4_NUM);
+	
+	MOTOR_DRIVER_DIRECTION_PORT |= 1 << MOTOR_DRIVER_IN2_NUM | 1 << MOTOR_DRIVER_IN3_NUM;
+	// 왼쪽바퀴 역회전, 오른쪽바퀴 정회전
+	
+	MOTOR_LEFT_PWM = MOTOR_RIGHT_PWM = speed;
+}
+
+void motor_turn_right_bi(int speed)
+{
+	// direction port reset
+	MOTOR_DRIVER_DIRECTION_PORT &= ~(1 << MOTOR_DRIVER_IN1_NUM | 1 << MOTOR_DRIVER_IN2_NUM |
+									 1 << MOTOR_DRIVER_IN3_NUM | 1 << MOTOR_DRIVER_IN4_NUM);
+	
+	MOTOR_DRIVER_DIRECTION_PORT |= 1 << MOTOR_DRIVER_IN1_NUM | 1 << MOTOR_DRIVER_IN4_NUM;
+	// 왼쪽바퀴 정회전, 오른쪽바퀴 역회전
+	
+	MOTOR_LEFT_PWM = MOTOR_RIGHT_PWM = speed;
 }

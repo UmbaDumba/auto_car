@@ -22,6 +22,8 @@ volatile int msec_count = 0;
 int sec_count = 0;
 volatile int monitor_shoot = 0;
 
+int auto_car_program(void);
+int test_program(void);
 void init_timer0(void);
 void moving_manual_mode(t_car_info *my_car);
 void moving_auto_mode(t_car_info *my_car);
@@ -34,7 +36,9 @@ void (*car_move_func[])(int) =
 	motor_turn_right,
 	motor_stop,
 	motor_backward_left,
-	motor_backward_right
+	motor_backward_right,
+	motor_turn_left_bi,
+	motor_turn_right_bi,
 };
 
 void (*car_program_modes[])(t_car_info *) =
@@ -62,15 +66,19 @@ char * lcd_texts[] =
 	"stop"
 };
 
-int fnd_fonts[] = {
-	0x8e,	// F
-	0x83,	// b
-	0xc7,	// L
-	0x88,	// R
-	0x92,	// S
-	0x83,	// b
-	0x83	// b
+int fnd_fonts[][4] = {
+	{FND_F, FND_blank, FND_blank, FND_blank},	// F - - -
+	{FND_b, FND_blank, FND_blank, FND_blank},	// b - - -
+	{FND_L, FND_blank, FND_blank, FND_blank},	// L - - -
+	{FND_R, FND_blank, FND_blank, FND_blank},	// R - - -
+	{FND_S, FND_blank, FND_blank, FND_blank},	// S - - -
+	{FND_b, FND_blank, FND_L, FND_blank},		// b - L -
+	{FND_b, FND_blank, FND_R, FND_blank},		// b - R -
+	{FND_blank, FND_blank, FND_L, FND_L},		// - - L L
+	{FND_blank, FND_blank, FND_R, FND_R}		// - - R R
 };
+
+// =======================================================================================
 
 ISR(TIMER0_OVF_vect)
 {
@@ -81,6 +89,40 @@ ISR(TIMER0_OVF_vect)
 }
 
 int main(void)
+{
+	//test_program();
+	auto_car_program();
+	
+	return 0;
+}
+
+int test_program(void)
+{
+	init_timer0();
+	init_timer1();
+	init_L298N();
+	init_uart1();
+	init_uart0();
+	init_ultrasonic();
+	init_button();
+	I2C_LCD_init();
+	init_fnd();
+	sei();
+	
+	while(1)
+	{
+		_delay_ms(1000);
+		
+		motor_turn_left_bi(1000);
+		_delay_ms(500);
+		
+		motor_stop(0);
+	}
+	
+	return 0;
+}
+
+int auto_car_program(void)
 {
 	// TODO
     // 각종 초기화
@@ -116,7 +158,7 @@ int main(void)
 		if(monitor_shoot)
 		{
 			monitor_shoot = 0;
-			fnd_display_0(my_car.fnd_char);
+			fnd_display_all(my_car.fnd_char);
 			if(msec_count % 100 == 0)
 			{
 				I2C_LCD_clear();
@@ -217,29 +259,63 @@ void moving_manual_mode(t_car_info *my_car)
 
 void moving_auto_mode(t_car_info *my_car)
 {
+	static int back_count = 0;
+	static int bi_count = 0;
+	
 	check_obstacle();
 	
-	if((obstacle_info[0] && obstacle_info[1] && obstacle_info[2]))
+	if(my_car->state == BI_LEFT || my_car->state == BI_RIGHT)
 	{
-		//my_car->state = STOP;
-		my_car->state = BACK_RIGHT;
-	}else if(!obstacle_info[0] && obstacle_info[1] && !obstacle_info[2])
+		bi_count++;
+		if(bi_count < 500)
+		{
+			car_move_func[my_car->state](speed_boundarys[my_car->speed]);
+		}else{
+			bi_count = 0;
+		}
+	}
+	
+	
+	if(obstacle_info[0] > OBSTACLE_VALUE_C && obstacle_info[1] > OBSTACLE_VALUE_C && obstacle_info[2] > OBSTACLE_VALUE_C)
+	{
+		my_car->speed = 9;
+		my_car->state = FORWARD;
+	}else if(obstacle_info[0] < OBSTACLE_VALUE_A && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_C)
+	{
+		my_car->speed = 9;
+		//my_car->state = TURN_RIGHT;
+		my_car->state = BI_RIGHT;
+	}else if(obstacle_info[2] < OBSTACLE_VALUE_A && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[0] > OBSTACLE_VALUE_C)
+	{
+		my_car->speed = 9;
+		//my_car->state = TURN_LEFT;
+		my_car->state = BI_LEFT;
+	}else if(obstacle_info[0] < OBSTACLE_VALUE_B && obstacle_info[2] > OBSTACLE_VALUE_B)
 	{
 		my_car->speed = 9;
 		my_car->state = TURN_RIGHT;
-	}else if((obstacle_info[0] && obstacle_info[1]) || obstacle_info[0])
-	{
-		my_car->speed = 9;
-		my_car->state = TURN_RIGHT;
-	}else if((obstacle_info[1] && obstacle_info[2]) || obstacle_info[2])
+		//my_car->state = BI_RIGHT;
+	}else if(obstacle_info[2] < OBSTACLE_VALUE_B && obstacle_info[0] > OBSTACLE_VALUE_B)
 	{
 		my_car->speed = 9;
 		my_car->state = TURN_LEFT;
-	}else{
-		my_car->speed = 2;
+		//my_car->state = BI_LEFT;
+	}
+	else if(obstacle_info[0] < OBSTACLE_VALUE_A && obstacle_info[1] < OBSTACLE_VALUE_A && obstacle_info[2] < OBSTACLE_VALUE_A)
+	{
+		my_car->speed = 3;
+		my_car->state = BACKWARD;	
+	}else if(obstacle_info[1] < OBSTACLE_VALUE_A)
+	{
+		my_car->state = STOP;
+	}else
+	{
+		my_car->speed = 5;
 		my_car->state = FORWARD;
 	}
 	
+
+
 	my_car->fnd_char = fnd_fonts[my_car->state];
 	if(my_car->state != STOP)
 	{
