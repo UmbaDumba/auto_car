@@ -276,16 +276,16 @@ void moving_auto_mode(t_car_info *my_car)
 	}
 	
 	
-	if(obstacle_info[0] > OBSTACLE_VALUE_C && obstacle_info[1] > OBSTACLE_VALUE_C && obstacle_info[2] > OBSTACLE_VALUE_C)
+	if(obstacle_info[0] > OBSTACLE_VALUE_D && obstacle_info[1] > OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_D)
 	{
 		my_car->speed = 9;
 		my_car->state = FORWARD;
-	}else if(obstacle_info[0] < OBSTACLE_VALUE_A && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_C)
+	}else if(obstacle_info[0] < OBSTACLE_VALUE_B && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_C)
 	{
 		my_car->speed = 9;
 		//my_car->state = TURN_RIGHT;
 		my_car->state = BI_RIGHT;
-	}else if(obstacle_info[2] < OBSTACLE_VALUE_A && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[0] > OBSTACLE_VALUE_C)
+	}else if(obstacle_info[2] < OBSTACLE_VALUE_B && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[0] > OBSTACLE_VALUE_C)
 	{
 		my_car->speed = 9;
 		//my_car->state = TURN_LEFT;

@@ -997,15 +997,15 @@ void I2C_LCD_write_string_XY(uint8_t row, uint8_t col, char *string)
  5aa:	10 92 21 02 	sts	0x0221, r1	; 0x800221 <bi_count.2210>
  5ae:	80 91 37 02 	lds	r24, 0x0237	; 0x800237 <obstacle_info>
  5b2:	90 91 38 02 	lds	r25, 0x0238	; 0x800238 <obstacle_info+0x1>
- 5b6:	40 97       	sbiw	r24, 0x10	; 16
+ 5b6:	4a 97       	sbiw	r24, 0x1a	; 26
  5b8:	9c f0       	brlt	.+38     	; 0x5e0 <moving_auto_mode+0x90>
  5ba:	80 91 39 02 	lds	r24, 0x0239	; 0x800239 <obstacle_info+0x2>
  5be:	90 91 3a 02 	lds	r25, 0x023A	; 0x80023a <obstacle_info+0x3>
- 5c2:	40 97       	sbiw	r24, 0x10	; 16
+ 5c2:	4a 97       	sbiw	r24, 0x1a	; 26
  5c4:	6c f0       	brlt	.+26     	; 0x5e0 <moving_auto_mode+0x90>
  5c6:	80 91 3b 02 	lds	r24, 0x023B	; 0x80023b <obstacle_info+0x4>
  5ca:	90 91 3c 02 	lds	r25, 0x023C	; 0x80023c <obstacle_info+0x5>
- 5ce:	40 97       	sbiw	r24, 0x10	; 16
+ 5ce:	4a 97       	sbiw	r24, 0x1a	; 26
  5d0:	3c f0       	brlt	.+14     	; 0x5e0 <moving_auto_mode+0x90>
  5d2:	89 e0       	ldi	r24, 0x09	; 9
  5d4:	90 e0       	ldi	r25, 0x00	; 0
@@ -1016,7 +1016,7 @@ void I2C_LCD_write_string_XY(uint8_t row, uint8_t col, char *string)
  5de:	ab c0       	rjmp	.+342    	; 0x736 <moving_auto_mode+0x1e6>
  5e0:	80 91 37 02 	lds	r24, 0x0237	; 0x800237 <obstacle_info>
  5e4:	90 91 38 02 	lds	r25, 0x0238	; 0x800238 <obstacle_info+0x1>
- 5e8:	05 97       	sbiw	r24, 0x05	; 5
+ 5e8:	0a 97       	sbiw	r24, 0x0a	; 10
  5ea:	ac f4       	brge	.+42     	; 0x616 <moving_auto_mode+0xc6>
  5ec:	80 91 39 02 	lds	r24, 0x0239	; 0x800239 <obstacle_info+0x2>
  5f0:	90 91 3a 02 	lds	r25, 0x023A	; 0x80023a <obstacle_info+0x3>
@@ -1037,7 +1037,7 @@ void I2C_LCD_write_string_XY(uint8_t row, uint8_t col, char *string)
  614:	90 c0       	rjmp	.+288    	; 0x736 <moving_auto_mode+0x1e6>
  616:	80 91 3b 02 	lds	r24, 0x023B	; 0x80023b <obstacle_info+0x4>
  61a:	90 91 3c 02 	lds	r25, 0x023C	; 0x80023c <obstacle_info+0x5>
- 61e:	05 97       	sbiw	r24, 0x05	; 5
+ 61e:	0a 97       	sbiw	r24, 0x0a	; 10
  620:	ac f4       	brge	.+42     	; 0x64c <moving_auto_mode+0xfc>
  622:	80 91 39 02 	lds	r24, 0x0239	; 0x800239 <obstacle_info+0x2>
  626:	90 91 3a 02 	lds	r25, 0x023A	; 0x80023a <obstacle_info+0x3>
