@@ -12,7 +12,11 @@ I2C_LCD.c
 
 main.c
 
+music_sheets.c
+
 pwm.c
+
+speaker.c
 
 uart0.c
 

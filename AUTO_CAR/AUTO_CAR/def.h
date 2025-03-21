@@ -12,9 +12,11 @@
 #define COMMAND_NUMBER 10 // command 개수
 #define COMMAND_LENGTH 40 // command 길이
 
-
+#define MODE_NUM	4
 #define MANUAL_MODE	0	// 수동모드
-#define AUTO_MODE	1	// 자동모드
+#define AUTO_MODE_A	1	// 자동모드 (앰뷸런스)
+#define AUTO_MODE_B 2	// 자동모드 (소방차)
+#define AUTO_MODE_C	3	// 자동모드 (동요)
 
 #define FORWARD		0
 #define BACKWARD	1
@@ -27,6 +29,7 @@
 #define BI_RIGHT	8
 
 #define SEQUENCE_TIME	100
+
 #define OBSTACLE_VALUE_A	5
 #define OBSTACLE_VALUE_B	10
 #define OBSTACLE_VALUE_C	15
@@ -47,11 +50,10 @@ typedef struct car_info{
 					// 직진, 후진, 좌회전, 우회전, 멈춤
 	int sequence_state;	// 연속으로 500ms를 해야하는 state의 경우, sequence_state가 500을 넘겨야 다른동작을 받음
 	int speed; // 자동차 속도
-	// todo		// 틀어 줄 노래 (부저 출력노래 결정)
 	char *lcd_text_up;		// LCD 문구 (출력할것) -> 문자열
 	char *lcd_text_down;
 	int* fnd_char;		// FND 문구 (출력할것) -> font 배열 포인터??
-	
+	void (*music_func)(void);		// 틀어 줄 노래 (부저 출력노래 결정)
 }t_car_info;
 
 #endif /* DEF_H_ */

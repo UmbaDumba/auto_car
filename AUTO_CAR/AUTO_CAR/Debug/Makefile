@@ -42,7 +42,9 @@ C_SRCS +=  \
 ../I2C.c \
 ../I2C_LCD.c \
 ../main.c \
+../music_sheets.c \
 ../pwm.c \
+../speaker.c \
 ../uart0.c \
 ../uart1.c \
 ../ultrasonic.c
@@ -60,7 +62,9 @@ fnd.o \
 I2C.o \
 I2C_LCD.o \
 main.o \
+music_sheets.o \
 pwm.o \
+speaker.o \
 uart0.o \
 uart1.o \
 ultrasonic.o
@@ -71,7 +75,9 @@ fnd.o \
 I2C.o \
 I2C_LCD.o \
 main.o \
+music_sheets.o \
 pwm.o \
+speaker.o \
 uart0.o \
 uart1.o \
 ultrasonic.o
@@ -82,7 +88,9 @@ fnd.d \
 I2C.d \
 I2C_LCD.d \
 main.d \
+music_sheets.d \
 pwm.d \
+speaker.d \
 uart0.d \
 uart1.d \
 ultrasonic.d
@@ -93,7 +101,9 @@ fnd.d \
 I2C.d \
 I2C_LCD.d \
 main.d \
+music_sheets.d \
 pwm.d \
+speaker.d \
 uart0.d \
 uart1.d \
 ultrasonic.d
@@ -147,7 +157,21 @@ LINKER_SCRIPT_DEP+=
 	@echo Finished building: $<
 	
 
+./music_sheets.o: .././music_sheets.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega128a -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\gcc\dev\atmega128a" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 ./pwm.o: .././pwm.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega128a -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\gcc\dev\atmega128a" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./speaker.o: .././speaker.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega128a -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\gcc\dev\atmega128a" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

@@ -10,7 +10,6 @@
 extern int sec_count;
 
 volatile int obstacle_info[] = {0, 0, 0}; // left, center, right
-								// 기준거리 이내에 있으면 1, 없으면 0
 volatile int check_distance_index = 0;
 volatile int distance_checking = 0;
 

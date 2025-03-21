@@ -15,6 +15,7 @@
 #include "button.h"
 #include "I2C_LCD.h"
 #include "fnd.h"
+#include "speaker.h"
 
 FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
 
@@ -44,6 +45,8 @@ void (*car_move_func[])(int) =
 void (*car_program_modes[])(t_car_info *) =
 {
 	moving_manual_mode,
+	moving_auto_mode,
+	moving_auto_mode,
 	moving_auto_mode
 };
 
@@ -52,7 +55,9 @@ int speed_boundarys[] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 char * lcd_texts[] = 
 {
 	"manual mode",
-	"automatic mode",
+	"AMBULACE",
+	"FIRE ENGINE",
+	"KINDERGARTEN",
 	"speed 1 (min)",
 	"speed 2",
 	"speed 3",
@@ -107,16 +112,16 @@ int test_program(void)
 	init_button();
 	I2C_LCD_init();
 	init_fnd();
+	init_speaker();
 	sei();
 	
 	while(1)
 	{
-		_delay_ms(1000);
+		//_delay_ms(1000);
+		_delay_ms(1);
+		kinder_music();
 		
-		motor_turn_left_bi(1000);
-		_delay_ms(500);
-		
-		motor_stop(0);
+		//motor_stop(0);
 	}
 	
 	return 0;
@@ -135,6 +140,7 @@ int auto_car_program(void)
 	init_button();
 	I2C_LCD_init();
 	init_fnd();
+	init_speaker();
 	sei();
 	stdout = &OUTPUT;
 	
@@ -143,50 +149,69 @@ int auto_car_program(void)
 	my_car.state = STOP;
 	my_car.speed = 3;
 	my_car.lcd_text_up = lcd_texts[0];
-	my_car.lcd_text_down = lcd_texts[my_car.speed + 2];
+	my_car.lcd_text_down = lcd_texts[my_car.speed + MODE_NUM];
 	my_car.fnd_char = fnd_fonts[STOP];
+	my_car.music_func = manual_music;
 	
 	motor_stop(0);
     while (1) 
     {
 		// TODO
 		// LED 제어하기
-		// LCD 제어하기
-		// FND 제어하기
 		// 부저 제어하기
 		
 		if(monitor_shoot)
 		{
 			monitor_shoot = 0;
 			fnd_display_all(my_car.fnd_char);
+			my_car.music_func();
 			if(msec_count % 100 == 0)
 			{
 				I2C_LCD_clear();
 				I2C_LCD_write_string_XY(0,0,my_car.lcd_text_up);
 				I2C_LCD_write_string_XY(1,0,my_car.lcd_text_down);
 			}
-			
 		}
 		
 		if(get_button(BUTTON0, BUTTON0PIN))
 		{
 			if(my_car.mode == MANUAL_MODE)
 			{
-				my_car.mode = AUTO_MODE;
+				my_car.mode = AUTO_MODE_A;
 				my_car.state = FORWARD;
 				my_car.speed = 2;
 				my_car.lcd_text_up = lcd_texts[1];
-				my_car.lcd_text_down = lcd_texts[3];
+				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[FORWARD];
-			}else if(my_car.mode == AUTO_MODE)
+				my_car.music_func = ambulance_music;
+			}else if(my_car.mode == AUTO_MODE_A)
 			{
-				bt_data = 0;
+				my_car.mode = AUTO_MODE_B;
+				my_car.state = FORWARD;
+				my_car.speed = 2;
+				my_car.lcd_text_up = lcd_texts[2];
+				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
+				my_car.fnd_char = fnd_fonts[FORWARD];
+				my_car.music_func = fire_music;
+			}else if(my_car.mode == AUTO_MODE_B)
+			{
+				my_car.mode = AUTO_MODE_C;
+				my_car.state = FORWARD;
+				my_car.speed = 2;
+				my_car.lcd_text_up = lcd_texts[3];
+				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
+				my_car.fnd_char = fnd_fonts[FORWARD];
+				my_car.music_func = kinder_music;
+			}else if(my_car.mode == AUTO_MODE_C)
+			{
+				bt_data = 's';
 				my_car.mode = MANUAL_MODE;
 				my_car.state = STOP;
 				my_car.speed = 3;
 				my_car.lcd_text_up = lcd_texts[0];
-				my_car.lcd_text_down = lcd_texts[12];
+				my_car.lcd_text_down = lcd_texts[3 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[STOP];
+				my_car.music_func = manual_music;
 			}
 			
 		}
@@ -209,6 +234,8 @@ void init_timer0(void)
 	TCCR0 |= 1 << CS02 | 0 << CS01 | 0 << CS00;
 	TIMSK |= 1 << TOIE0;
 }
+
+
 
 void moving_manual_mode(t_car_info *my_car)
 {
@@ -250,9 +277,9 @@ void moving_manual_mode(t_car_info *my_car)
 		my_car->fnd_char = fnd_fonts[my_car->state];
 		if(my_car->state != STOP)
 		{
-			my_car->lcd_text_down = lcd_texts[my_car->speed + 2];
+			my_car->lcd_text_down = lcd_texts[my_car->speed + MODE_NUM];
 		}else{
-			my_car->lcd_text_down = lcd_texts[12];
+			my_car->lcd_text_down = lcd_texts[10 + MODE_NUM];
 		}
 		car_move_func[my_car->state](speed_boundarys[my_car->speed]);
 }
@@ -280,12 +307,12 @@ void moving_auto_mode(t_car_info *my_car)
 	{
 		my_car->speed = 9;
 		my_car->state = FORWARD;
-	}else if(obstacle_info[0] < OBSTACLE_VALUE_B && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_C)
+	}else if(obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[2] > OBSTACLE_VALUE_C && obstacle_info[0] < obstacle_info[2])
 	{
 		my_car->speed = 9;
 		//my_car->state = TURN_RIGHT;
 		my_car->state = BI_RIGHT;
-	}else if(obstacle_info[2] < OBSTACLE_VALUE_B && obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[0] > OBSTACLE_VALUE_C)
+	}else if(obstacle_info[1] < OBSTACLE_VALUE_D && obstacle_info[0] > OBSTACLE_VALUE_C && obstacle_info[0] > obstacle_info[2])
 	{
 		my_car->speed = 9;
 		//my_car->state = TURN_LEFT;
@@ -319,9 +346,9 @@ void moving_auto_mode(t_car_info *my_car)
 	my_car->fnd_char = fnd_fonts[my_car->state];
 	if(my_car->state != STOP)
 	{
-		my_car->lcd_text_down = lcd_texts[my_car->speed + 2];
+		my_car->lcd_text_down = lcd_texts[my_car->speed + MODE_NUM];
 	}else{
-		my_car->lcd_text_down = lcd_texts[12];
+		my_car->lcd_text_down = lcd_texts[10 + MODE_NUM];
 	}
 	
 	car_move_func[my_car->state](speed_boundarys[my_car->speed]);
