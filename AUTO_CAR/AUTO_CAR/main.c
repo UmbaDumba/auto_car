@@ -14,10 +14,12 @@
 #include "ultrasonic.h"
 #include "button.h"
 #include "I2C_LCD.h"
+#include "fnd.h"
 
 FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
 
 volatile int msec_count = 0;
+int sec_count = 0;
 volatile int monitor_shoot = 0;
 
 void init_timer0(void);
@@ -30,7 +32,9 @@ void (*car_move_func[])(int) =
 	motor_direction_backward,
 	motor_turn_left,
 	motor_turn_right,
-	motor_stop
+	motor_stop,
+	motor_backward_left,
+	motor_backward_right
 };
 
 void (*car_program_modes[])(t_car_info *) =
@@ -58,6 +62,16 @@ char * lcd_texts[] =
 	"stop"
 };
 
+int fnd_fonts[] = {
+	0x8e,	// F
+	0x83,	// b
+	0xc7,	// L
+	0x88,	// R
+	0x92,	// S
+	0x83,	// b
+	0x83	// b
+};
+
 ISR(TIMER0_OVF_vect)
 {
 	TCNT0 = 6; // 6 ~ 256으로 돌리기 위해
@@ -78,6 +92,7 @@ int main(void)
 	init_ultrasonic();
 	init_button();
 	I2C_LCD_init();
+	init_fnd();
 	sei();
 	stdout = &OUTPUT;
 	
@@ -87,6 +102,7 @@ int main(void)
 	my_car.speed = 3;
 	my_car.lcd_text_up = lcd_texts[0];
 	my_car.lcd_text_down = lcd_texts[my_car.speed + 2];
+	my_car.fnd_char = fnd_fonts[STOP];
 	
 	motor_stop(0);
     while (1) 
@@ -100,7 +116,7 @@ int main(void)
 		if(monitor_shoot)
 		{
 			monitor_shoot = 0;
-			
+			fnd_display_0(my_car.fnd_char);
 			if(msec_count % 100 == 0)
 			{
 				I2C_LCD_clear();
@@ -119,6 +135,7 @@ int main(void)
 				my_car.speed = 2;
 				my_car.lcd_text_up = lcd_texts[1];
 				my_car.lcd_text_down = lcd_texts[3];
+				my_car.fnd_char = fnd_fonts[FORWARD];
 			}else if(my_car.mode == AUTO_MODE)
 			{
 				bt_data = 0;
@@ -127,6 +144,7 @@ int main(void)
 				my_car.speed = 3;
 				my_car.lcd_text_up = lcd_texts[0];
 				my_car.lcd_text_down = lcd_texts[12];
+				my_car.fnd_char = fnd_fonts[STOP];
 			}
 			
 		}
@@ -136,7 +154,7 @@ int main(void)
 		if(msec_count > 1000)
 		{
 			msec_count = 0;
-			
+			sec_count++;
 		}
 		
 		
@@ -187,6 +205,7 @@ void moving_manual_mode(t_car_info *my_car)
 				my_car->state = STOP;
 		}
 		
+		my_car->fnd_char = fnd_fonts[my_car->state];
 		if(my_car->state != STOP)
 		{
 			my_car->lcd_text_down = lcd_texts[my_car->speed + 2];
@@ -200,9 +219,14 @@ void moving_auto_mode(t_car_info *my_car)
 {
 	check_obstacle();
 	
-	if((obstacle_info[0] && obstacle_info[1] && obstacle_info[2]) || (!obstacle_info[0] && obstacle_info[1] && !obstacle_info[2]))
+	if((obstacle_info[0] && obstacle_info[1] && obstacle_info[2]))
 	{
-		my_car->state = STOP;
+		//my_car->state = STOP;
+		my_car->state = BACK_RIGHT;
+	}else if(!obstacle_info[0] && obstacle_info[1] && !obstacle_info[2])
+	{
+		my_car->speed = 9;
+		my_car->state = TURN_RIGHT;
 	}else if((obstacle_info[0] && obstacle_info[1]) || obstacle_info[0])
 	{
 		my_car->speed = 9;
@@ -216,6 +240,7 @@ void moving_auto_mode(t_car_info *my_car)
 		my_car->state = FORWARD;
 	}
 	
+	my_car->fnd_char = fnd_fonts[my_car->state];
 	if(my_car->state != STOP)
 	{
 		my_car->lcd_text_down = lcd_texts[my_car->speed + 2];

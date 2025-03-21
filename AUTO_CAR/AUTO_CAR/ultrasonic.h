@@ -14,7 +14,7 @@
 #include <util/delay.h>  // _delay_ms _delay_us
 #include <avr/interrupt.h>
 
-#define MAX_LENGHT			6
+#define MAX_LENGHT			3
 
 #define TRIG_PORT			PORTA
 #define TRIG_DDR			DDRA

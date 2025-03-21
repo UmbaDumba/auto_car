@@ -4,6 +4,8 @@
 
 button.c
 
+fnd.c
+
 I2C.c
 
 I2C_LCD.c

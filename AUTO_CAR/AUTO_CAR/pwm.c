@@ -93,3 +93,16 @@ void motor_turn_right(int speed)
 	MOTOR_RIGHT_PWM = 0;
 }
 
+void motor_backward_left(int speed)
+{
+	motor_direction_backward(0); // 후진모드
+	MOTOR_LEFT_PWM = 0;
+	MOTOR_RIGHT_PWM = speed;
+}
+
+void motor_backward_right(int speed)
+{
+	motor_direction_backward(0);
+	MOTOR_LEFT_PWM = speed;
+	MOTOR_RIGHT_PWM = 0;
+}

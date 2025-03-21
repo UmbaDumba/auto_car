@@ -21,6 +21,8 @@
 #define TURN_LEFT	2
 #define TURN_RIGHT	3
 #define STOP		4
+#define BACK_LEFT	5
+#define BACK_RIGHT	6
 
 #define SPEED_BOUNDARY_NUM	10
 
@@ -32,7 +34,7 @@ typedef struct car_info{
 	// todo		// 틀어 줄 노래 (부저 출력노래 결정)
 	char *lcd_text_up;		// LCD 문구 (출력할것) -> 문자열
 	char *lcd_text_down;
-	// todo		// FND 문구 (출력할것) -> font 배열 포인터??
+	int fnd_char;		// FND 문구 (출력할것) -> font 배열 포인터??
 	
 }t_car_info;
 
