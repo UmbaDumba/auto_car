@@ -10,6 +10,8 @@ I2C.c
 
 I2C_LCD.c
 
+led.c
+
 main.c
 
 music_sheets.c

@@ -16,11 +16,14 @@
 #include "I2C_LCD.h"
 #include "fnd.h"
 #include "speaker.h"
+#include "led.h"
 
 FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
 
 volatile int msec_count = 0;
+volatile int led_count = 0;
 int sec_count = 0;
+int led_sec_count = 0;
 volatile int monitor_shoot = 0;
 
 int auto_car_program(void);
@@ -72,15 +75,20 @@ char * lcd_texts[] =
 };
 
 int fnd_fonts[][4] = {
-	{FND_F, FND_blank, FND_blank, FND_blank},	// F - - -
-	{FND_b, FND_blank, FND_blank, FND_blank},	// b - - -
+	{FND_blank, FND_F, FND_F, FND_blank},		// - F F -
+	{FND_blank, FND_b, FND_b, FND_blank},		// - b b -
 	{FND_L, FND_blank, FND_blank, FND_blank},	// L - - -
-	{FND_R, FND_blank, FND_blank, FND_blank},	// R - - -
+	{FND_blank, FND_blank, FND_blank, FND_R},	// - - - R
 	{FND_S, FND_blank, FND_blank, FND_blank},	// S - - -
-	{FND_b, FND_blank, FND_L, FND_blank},		// b - L -
-	{FND_b, FND_blank, FND_R, FND_blank},		// b - R -
-	{FND_blank, FND_blank, FND_L, FND_L},		// - - L L
+	{FND_b, FND_L, FND_blank, FND_blank},		// b L - -
+	{FND_blank, FND_blank, FND_b, FND_R},		// - - b R
+	{FND_L, FND_L, FND_blank, FND_blank},		// L L - -
 	{FND_blank, FND_blank, FND_R, FND_R}		// - - R R
+};
+
+void (*led_funcs[])(void) = {
+	led_on,
+	led_off
 };
 
 // =======================================================================================
@@ -89,6 +97,7 @@ ISR(TIMER0_OVF_vect)
 {
 	TCNT0 = 6; // 6 ~ 256으로 돌리기 위해
 	msec_count++;
+	led_count++;
 	
 	monitor_shoot = 1;
 }
@@ -141,8 +150,11 @@ int auto_car_program(void)
 	I2C_LCD_init();
 	init_fnd();
 	init_speaker();
+	init_led();
 	sei();
 	stdout = &OUTPUT;
+	
+	int led_index = 0;
 	
 	t_car_info my_car;
 	my_car.mode = MANUAL_MODE;
@@ -152,13 +164,14 @@ int auto_car_program(void)
 	my_car.lcd_text_down = lcd_texts[my_car.speed + MODE_NUM];
 	my_car.fnd_char = fnd_fonts[STOP];
 	my_car.music_func = manual_music;
+	my_car.led_duration = 0;
+	led_on();
 	
 	motor_stop(0);
     while (1) 
     {
 		// TODO
 		// LED 제어하기
-		// 부저 제어하기
 		
 		if(monitor_shoot)
 		{
@@ -170,6 +183,11 @@ int auto_car_program(void)
 				I2C_LCD_clear();
 				I2C_LCD_write_string_XY(0,0,my_car.lcd_text_up);
 				I2C_LCD_write_string_XY(1,0,my_car.lcd_text_down);
+			}
+			if((my_car.led_duration != 0) && (led_count % my_car.led_duration == 0))
+			{
+				led_index = !led_index;
+				led_funcs[led_index]();
 			}
 		}
 		
@@ -184,6 +202,7 @@ int auto_car_program(void)
 				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[FORWARD];
 				my_car.music_func = ambulance_music;
+				my_car.led_duration = 500;
 			}else if(my_car.mode == AUTO_MODE_A)
 			{
 				my_car.mode = AUTO_MODE_B;
@@ -193,6 +212,7 @@ int auto_car_program(void)
 				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[FORWARD];
 				my_car.music_func = fire_music;
+				my_car.led_duration = 1000;
 			}else if(my_car.mode == AUTO_MODE_B)
 			{
 				my_car.mode = AUTO_MODE_C;
@@ -202,6 +222,7 @@ int auto_car_program(void)
 				my_car.lcd_text_down = lcd_texts[2 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[FORWARD];
 				my_car.music_func = kinder_music;
+				my_car.led_duration = 1500;
 			}else if(my_car.mode == AUTO_MODE_C)
 			{
 				bt_data = 's';
@@ -212,6 +233,8 @@ int auto_car_program(void)
 				my_car.lcd_text_down = lcd_texts[3 + MODE_NUM];
 				my_car.fnd_char = fnd_fonts[STOP];
 				my_car.music_func = manual_music;
+				my_car.led_duration = 0;
+				led_on();
 			}
 			
 		}
@@ -224,6 +247,11 @@ int auto_car_program(void)
 			sec_count++;
 		}
 		
+		if(led_count > 10000)
+		{
+			led_count = 0;
+			
+		}
 		
     }
 }

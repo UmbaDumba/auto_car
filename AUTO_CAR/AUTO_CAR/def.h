@@ -54,6 +54,7 @@ typedef struct car_info{
 	char *lcd_text_down;
 	int* fnd_char;		// FND 문구 (출력할것) -> font 배열 포인터??
 	void (*music_func)(void);		// 틀어 줄 노래 (부저 출력노래 결정)
+	int led_duration;				// led가 몇ms 단위로 깜빡일것인지
 }t_car_info;
 
 #endif /* DEF_H_ */

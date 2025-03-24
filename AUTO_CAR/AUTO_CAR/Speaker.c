@@ -70,7 +70,7 @@ void init_speaker(void)
 
 void manual_music(void)
 {
-	
+	SPEAKER_PWM = 0;
 }
 
 void kinder_music(void)
@@ -93,7 +93,7 @@ void kinder_music(void)
 void ambulance_music(void)
 {
 	static int sound_delay = 1000;
-	static int my_sound[] = {690, 610};
+	static int my_sound[] = {610, 680};
 	static int sound_index = 0;
 	
 	if(sound_delay > 0){
