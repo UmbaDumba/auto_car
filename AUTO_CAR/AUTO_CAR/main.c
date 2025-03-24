@@ -345,12 +345,12 @@ void moving_auto_mode(t_car_info *my_car)
 		my_car->speed = 9;
 		//my_car->state = TURN_LEFT;
 		my_car->state = BI_LEFT;
-	}else if(obstacle_info[0] < OBSTACLE_VALUE_B && obstacle_info[2] > OBSTACLE_VALUE_B)
+	}else if(obstacle_info[0] < OBSTACLE_VALUE_B && obstacle_info[2] > OBSTACLE_VALUE_B || (obstacle_info[2] - obstacle_info[0] > OBSTACLE_VALUE_C))
 	{
 		my_car->speed = 9;
 		my_car->state = TURN_RIGHT;
 		//my_car->state = BI_RIGHT;
-	}else if(obstacle_info[2] < OBSTACLE_VALUE_B && obstacle_info[0] > OBSTACLE_VALUE_B)
+	}else if(obstacle_info[2] < OBSTACLE_VALUE_B && obstacle_info[0] > OBSTACLE_VALUE_B || (obstacle_info[0] - obstacle_info[2] > OBSTACLE_VALUE_C))
 	{
 		my_car->speed = 9;
 		my_car->state = TURN_LEFT;
