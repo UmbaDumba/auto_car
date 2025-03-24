@@ -45,14 +45,14 @@
 #define FND_S		0x92
 
 typedef struct car_info{
-	int mode; // 수동모드 0, 자동모드 1
-	int state; // 지금 자동차 상태
-					// 직진, 후진, 좌회전, 우회전, 멈춤
-	int sequence_state;	// 연속으로 500ms를 해야하는 state의 경우, sequence_state가 500을 넘겨야 다른동작을 받음
-	int speed; // 자동차 속도
-	char *lcd_text_up;		// LCD 문구 (출력할것) -> 문자열
+	int mode;						// 수동모드 0, 자동모드 1
+	int state;						// 지금 자동차 상태
+												// 직진, 후진, 좌회전, 우회전, 멈춤
+	int sequence_state;				// 연속으로 500ms를 해야하는 state의 경우, sequence_state가 500을 넘겨야 다른동작을 받음
+	int speed;						// 자동차 속도
+	char *lcd_text_up;				// LCD 문구 (출력할것) -> 문자열
 	char *lcd_text_down;
-	int* fnd_char;		// FND 문구 (출력할것) -> font 배열 포인터??
+	int* fnd_char;					// FND 문구 (출력할것) -> font 배열 포인터??
 	void (*music_func)(void);		// 틀어 줄 노래 (부저 출력노래 결정)
 	int led_duration;				// led가 몇ms 단위로 깜빡일것인지
 }t_car_info;

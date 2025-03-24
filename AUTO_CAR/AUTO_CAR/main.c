@@ -29,6 +29,7 @@ volatile int monitor_shoot = 0;
 int auto_car_program(void);
 int test_program(void);
 void init_timer0(void);
+
 void moving_manual_mode(t_car_info *my_car);
 void moving_auto_mode(t_car_info *my_car);
 
@@ -157,6 +158,7 @@ int auto_car_program(void)
 	int led_index = 0;
 	
 	t_car_info my_car;
+	
 	my_car.mode = MANUAL_MODE;
 	my_car.state = STOP;
 	my_car.speed = 3;
@@ -171,7 +173,6 @@ int auto_car_program(void)
     while (1) 
     {
 		// TODO
-		// LED 제어하기
 		
 		if(monitor_shoot)
 		{

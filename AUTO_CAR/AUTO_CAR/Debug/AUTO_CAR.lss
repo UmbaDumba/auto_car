@@ -1346,6 +1346,7 @@ int auto_car_program(void)
 	int led_index = 0;
 	
 	t_car_info my_car;
+	
 	my_car.mode = MANUAL_MODE;
      87c:	8b 83       	std	Y+3, r24	; 0x03
      87e:	83 e0       	ldi	r24, 0x03	; 3
@@ -1462,10 +1463,10 @@ int auto_car_program(void)
 			{
 				my_car.mode = AUTO_MODE_A;
      8fe:	90 91 b0 02 	lds	r25, 0x02B0	; 0x8002b0 <monitor_shoot+0x1>
+	motor_stop(0);
     while (1) 
     {
 		// TODO
-		// LED 제어하기
 		
 		if(monitor_shoot)
      902:	89 2b       	or	r24, r25
